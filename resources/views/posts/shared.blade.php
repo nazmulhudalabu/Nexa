@@ -1,0 +1,4 @@
+@extends('layouts.app', ['title' => $post->name])
+@section('content')
+<article class="single-post"><p class="eyebrow">Shared field note</p><div class="single-post-grid"><div class="single-post-image">@if ($post->image)<img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->name }}">@elseif ($cover = $post->media->firstWhere('type', 'image') ?? $post->media->first())<img src="{{ $cover->url }}" alt="{{ $post->name }}">@endif</div><div class="single-post-copy"><p class="post-date">{{ $post->created_at->format('F j, Y') }}</p><h1>{{ $post->name }}</h1><div class="post-description">{!! nl2br(e($post->description)) !!}</div></div></div></article>
+@endsection

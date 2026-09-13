@@ -1,0 +1,12 @@
+@extends('layouts.app', ['title' => 'People'])
+
+@section('content')
+<section class="feed-heading"><div><p class="eyebrow">Find your people</p><h1>People on Nexa.</h1><p class="lede">Discover creators, friends, and interesting minds by name.</p></div></section>
+<form class="search-bar people-search" method="GET" action="{{ route('people.index') }}"><label class="sr-only" for="people-search">Search people by name</label><span class="search-icon" aria-hidden="true">⌕</span><input id="people-search" name="search" value="{{ $search }}" placeholder="Search by name..."><button class="button button-accent" type="submit">Find people</button>@if ($search !== '')<a class="clear-link" href="{{ route('people.index') }}">Clear</a>@endif</form>
+@if ($people->isEmpty())
+    <div class="empty-state"><span class="empty-icon">○</span><h2>No people found.</h2><p>Try another name or browse the whole community.</p><a class="button button-accent" href="{{ route('people.index') }}">Browse people</a></div>
+@else
+    <div class="people-grid">@foreach ($people as $person)<div class="person-card"><a class="person-card-link" href="{{ route('people.show', $person) }}"><img src="{{ $person->profile_photo_url }}" alt=""><span><strong>{{ $person->name }}</strong><small>{{ $person->profession ?: 'Nexa member' }}</small><small>{{ $person->posts_count }} {{ Str::plural('post', $person->posts_count) }}</small></span><b>→</b></a>@auth @if (auth()->id() !== $person->id) @php($friendship = $friendStatuses->get($person->id)) @if (!$friendship)<form method="POST" action="{{ route('friends.send', $person) }}">@csrf<button class="button button-accent person-add-button" type="submit">Add Friend</button></form>@elseif ($friendship->status === \App\Models\Friendship::FRIENDS)<span class="friend-state">Friends</span>@elseif ($friendship->sender_id === auth()->id())<form method="POST" action="{{ route('friends.cancel', $friendship) }}">@csrf<button class="button button-quiet person-add-button" type="submit">Request Sent</button></form>@else<form method="POST" action="{{ route('friends.accept', $friendship) }}">@csrf<button class="button button-accent person-add-button" type="submit">Accept</button></form>@endif @endif @endauth</div>@endforeach</div>
+    <div class="pagination">{{ $people->links() }}</div>
+@endif
+@endsection
