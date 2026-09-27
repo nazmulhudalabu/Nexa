@@ -7,6 +7,32 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Run The Project
+
+This project uses the PHP and MySQL services included with XAMPP.
+
+1. Start **Apache** and **MySQL** in the XAMPP Control Panel.
+2. Open a terminal in this project directory.
+3. Run the database migrations:
+
+```powershell
+C:\xampp\php\php.exe artisan migrate
+```
+
+4. Start Laravel:
+
+```powershell
+C:\xampp\php\php.exe artisan serve
+```
+
+5. In a second terminal, start Vite for frontend assets:
+
+```powershell
+npm run dev
+```
+
+Open `http://127.0.0.1:8000` in a browser. The VS Code configuration **Launch built-in server and Debug** uses the XAMPP PHP executable automatically.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

@@ -21,6 +21,34 @@
         @endif
         <small class="message-time">{{ $message->created_at->format('M j, g:i A') }}</small>
         @if ($message->edited_at)<small>edited</small>@endif @if ($message->pinned)<small>pinned</small>@endif
-        @auth @if ((int) $message->user_id === (int) auth()->id() && !$message->deleted_at)<form method="POST" action="{{ route('chat.message.delete', $message) }}">@csrf @method('DELETE')<button class="message-action" type="submit">Delete</button></form>@endif<div class="message-reaction-picker"><button class="message-action message-reaction-toggle" type="button" aria-label="React to message" title="React">☺</button><div class="message-reactions" hidden>@foreach (['LIKE' => '👍', 'LOVE' => '❤️', 'HAHA' => '😂', 'WOW' => '😮'] as $reactionType => $emoji)<form method="POST" action="{{ route('chat.message.react', [$message, 'type' => $reactionType]) }}">@csrf<button class="message-action" type="submit" title="{{ $reactionType }}">{{ $emoji }}</button></form>@endforeach</div></div>@endauth
+        @auth
+            @if ((int) $message->user_id === (int) auth()->id() && !$message->deleted_at)
+                <div class="message-menu-wrap">
+                    <button class="message-action message-menu-toggle" type="button" aria-label="Message options" title="Message options">⋮</button>
+                    <div class="message-menu" hidden>
+                        @if (trim((string) $message->body) !== '')
+                            <button class="message-menu-item message-edit-toggle" type="button">Edit</button>
+                        @endif
+                        <form method="POST" action="{{ route('chat.message.delete', $message) }}" onsubmit="return confirm('Delete this message?');">
+                            @csrf
+                            @method('DELETE')
+                            <button class="message-menu-item message-delete-item" type="submit">Delete</button>
+                        </form>
+                    </div>
+                </div>
+                @if (trim((string) $message->body) !== '')
+                    <form class="message-edit-form" method="POST" action="{{ route('chat.message.update', $message) }}" hidden>
+                        @csrf
+                        @method('PUT')
+                        <textarea name="body" rows="2" maxlength="5000" required>{{ $message->body }}</textarea>
+                        <div class="message-edit-actions">
+                            <button class="message-action message-edit-cancel" type="button">Cancel</button>
+                            <button class="message-action message-edit-save" type="submit">Save</button>
+                        </div>
+                    </form>
+                @endif
+            @endif
+            <div class="message-reaction-picker"><button class="message-action message-reaction-toggle" type="button" aria-label="React to message" title="React">☺</button><div class="message-reactions" hidden>@foreach (['LIKE' => '👍', 'LOVE' => '❤️', 'HAHA' => '😂', 'WOW' => '😮'] as $reactionType => $emoji)<form method="POST" action="{{ route('chat.message.react', [$message, 'type' => $reactionType]) }}">@csrf<button class="message-action" type="submit" title="{{ $reactionType }}">{{ $emoji }}</button></form>@endforeach</div></div>
+        @endauth
     </div>
 </div>

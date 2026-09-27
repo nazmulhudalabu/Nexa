@@ -75,10 +75,12 @@ class AuthController extends Controller
         return to_route('posts.index');
     }
 
-    public function verify(Request $request, User $user): RedirectResponse
+    public function verify(Request $request, User $id): RedirectResponse
     {
         abort_unless($request->hasValidSignature(), 403);
-        abort_unless($request->user()?->is($user), 403);
+        abort_unless($request->user()?->is($id), 403);
+        $user = $id;
+
         if (! $user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
             $user->update(['status' => 'ACTIVE']);

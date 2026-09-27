@@ -20,6 +20,20 @@ class BangladeshiUsersSeeder extends Seeder
     private array $professions = ['Computer Science Student', 'Software Engineer', 'Data Analyst', 'Medical Student', 'Research Assistant', 'UX Designer', 'Cybersecurity Analyst', 'Business Analyst', 'Civil Engineer', 'Lecturer'];
     private array $educations = ['BSc in Computer Science', 'BSc in Engineering', 'MBBS Student', 'BBA in Finance', 'MSc Researcher', 'Bachelor of Architecture', 'BSc in Information Technology', 'Economics Graduate'];
     private array $photoContexts = ['student,computer', 'programmer,computer', 'analyst,computer', 'medical,student', 'researcher,lab', 'designer,computer', 'cybersecurity,computer', 'business,office', 'engineer,construction', 'teacher,classroom'];
+    private array $postIdeas = [
+        ['title' => 'A walk through old Dhaka', 'body' => 'The streets were busy, colourful, and full of stories today.'],
+        ['title' => 'Learning something new', 'body' => 'Spent the evening practising, taking notes, and making a little progress.'],
+        ['title' => 'Weekend in Bangladesh', 'body' => 'Good food, familiar faces, and a quiet break from the usual routine.'],
+        ['title' => 'A small goal for this month', 'body' => 'Trying to stay consistent and celebrate progress instead of waiting for perfection.'],
+        ['title' => 'Rainy afternoon thoughts', 'body' => 'The rain changed the whole mood of the city. Some days are meant to move slowly.'],
+    ];
+    private array $storyIdeas = [
+        'Good morning from Bangladesh. Hope your day starts well.',
+        'A quick update from a busy day of learning and work.',
+        'Found a beautiful corner of the city today.',
+        'Taking a short break and enjoying the little things.',
+        'Sharing a bit of positive energy before the day ends.',
+    ];
 
     public function run(): void
     {
@@ -74,22 +88,30 @@ class BangladeshiUsersSeeder extends Seeder
                     DB::table($table)->updateOrInsert(['user_id' => $user->id], $data + ['updated_at' => now(), 'created_at' => now()]);
                 }
 
-                foreach (range(1, 2) as $postNumber) {
+                foreach ($this->postIdeas as $postNumber => $postIdea) {
+                    $postNumber++;
                     $post = Post::updateOrCreate(
-                        ['user_id' => $user->id, 'name' => "{$firstName}'s Bangladesh diary {$postNumber}"],
+                        ['user_id' => $user->id, 'name' => "{$firstName}'s {$postIdea['title']}"],
                         [
-                            'description' => $postNumber === 1 ? 'Sharing a little moment from everyday life in Bangladesh.' : 'Learning, growing, and enjoying the small moments with good people.',
+                            'description' => $postIdea['body'],
+                            'image' => "https://picsum.photos/seed/bd-post-{$gender}-{$number}-{$postNumber}/1200/800",
                             'share_token' => Str::random(32),
+                            'visibility' => 'PUBLIC',
+                            'location' => $this->locations[$index % count($this->locations)].', Bangladesh',
+                            'feeling' => ['Happy', 'Excited', 'Grateful', 'Thoughtful'][$postNumber % 4],
                         ],
                     );
-                    $post->forceFill(['created_at' => now()->subDays(($index * 3) + $postNumber), 'updated_at' => now()->subDays(($index * 3) + $postNumber)])->save();
+                    $publishedAt = now()->subDays(($index * 7 + $postNumber * 11) % 365)->subHours(($index + $postNumber) % 24);
+                    $post->forceFill(['created_at' => $publishedAt, 'updated_at' => $publishedAt])->save();
                 }
 
                 Story::updateOrCreate(
                     ['seed_key' => "bd-{$gender}-{$number}"],
                     [
                         'user_id' => $user->id,
-                        'text' => $postNumber === 1 ? 'A fresh day in Bangladesh.' : 'Making memories and sharing good energy.',
+                        'type' => 'IMAGE',
+                        'privacy' => 'PUBLIC',
+                        'text' => $this->storyIdeas[$index % count($this->storyIdeas)],
                         'image' => "https://picsum.photos/seed/bd-story-{$gender}-{$number}/800/1100",
                         'expires_at' => now()->addDay(),
                         'created_at' => now()->subHours($index % 18),
@@ -98,6 +120,38 @@ class BangladeshiUsersSeeder extends Seeder
             }
         }
 
-        $this->command?->info('Seeded 100 Bangladeshi users: 50 male and 50 female, all aged 18-24. Password: password');
+        $this->seedPostShares();
+
+        $this->command?->info('Seeded 100 Bangladeshi users with profiles, posts, active stories, and timeline shares. Password: password');
+    }
+
+    private function seedPostShares(): void
+    {
+        $users = User::where('email', 'like', 'bd-%@example.com')->orderBy('id')->get();
+        $posts = Post::whereIn('user_id', $users->pluck('id'))->orderBy('id')->get();
+
+        if ($users->isEmpty() || $posts->isEmpty()) {
+            return;
+        }
+
+        foreach ($users as $index => $user) {
+            $post = $posts[($index * 7 + 3) % $posts->count()];
+
+            if ($post->user_id === $user->id) {
+                $post = $posts[($index * 7 + 4) % $posts->count()];
+            }
+
+            DB::table('shares')->updateOrInsert(
+                [
+                    'post_id' => $post->id,
+                    'user_id' => $user->id,
+                    'share_type' => 'TIMELINE',
+                ],
+                [
+                    'created_at' => now()->subDays(($index * 5) % 180),
+                    'updated_at' => now()->subDays(($index * 5) % 180),
+                ],
+            );
+        }
     }
 }

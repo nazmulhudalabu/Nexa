@@ -45,7 +45,7 @@
                         <div class="post-author"><a href="{{ $post->user ? route('people.show', $post->user) : '#' }}" class="author-avatar">{{ strtoupper(substr($post->user?->name ?? 'N', 0, 1)) }}</a><div><a href="{{ $post->user ? route('people.show', $post->user) : '#' }}"><strong>{{ $post->user?->name ?? 'Nexa member' }}</strong></a><p>{{ $post->created_at->diffForHumans() }}</p></div><span class="more-dot">•••</span></div>
                         <h2><a href="{{ route('posts.show', $post) }}">{{ $post->name }}</a></h2>
                         <p>{{ Str::limit($post->description, 130) }}</p>
-                        <div class="card-actions"><span>♡ {{ $post->reactions_count ?? $post->likes_count ?? $post->likes->count() }}</span><span>◌ {{ $post->comments_count ?? $post->comments->count() }}</span><a class="read-link" href="{{ route('posts.show', $post) }}">Open post <span aria-hidden="true">→</span></a></div>
+                        @include('posts.partials.inline-interactions', ['post' => $post])
                     </div>
                 </article>
             @endforeach

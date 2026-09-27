@@ -28,7 +28,6 @@ Route::middleware('auth')->group(function (): void {
 	Route::post('/stories/{story}/mute', [StoryController::class, 'mute'])->name('stories.mute');
 	Route::post('/stories/{story}/report', [StoryController::class, 'report'])->name('stories.report');
 	Route::get('/friends', [FriendController::class, 'index'])->name('friends.index');
-	Route::get('/stories/create', [StoryController::class, 'create'])->name('stories.create');
 	Route::get('/stories/{story}', [StoryController::class, 'show'])->name('stories.show');
 	Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 	Route::get('/notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
@@ -64,7 +63,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 Route::post('/account/reactivate', [SecurityController::class, 'reactivate'])->middleware('throttle:6,1')->name('account.reactivate');
 Route::get('/account/reactivate', fn () => view('auth.reactivate'))->middleware('guest')->name('account.reactivate.form');
 Route::get('/email/verify', fn () => view('auth.verify-email'))->middleware('auth')->name('verification.notice');
-Route::get('/email/verify/{user}/{hash}', [AuthController::class, 'verify'])->middleware(['auth', 'signed', 'throttle:6,1'])->name('verification.verify');
+Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verify'])->middleware(['auth', 'signed', 'throttle:6,1'])->name('verification.verify');
 Route::post('/email/verification-notification', [AuthController::class, 'resendVerification'])->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('guest')->name('password.request');
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->middleware(['guest', 'throttle:6,1'])->name('password.email');

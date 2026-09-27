@@ -38,7 +38,7 @@ class PeopleController extends Controller
     {
         $profile = $user->profile()->firstOrCreate(['user_id' => $user->id], ['username' => Str::slug($user->name).'-'.$user->id]);
         $user->loadCount('posts')
-            ->load(['profilePosts' => fn ($query) => $query->withCount(['likes', 'comments'])->with('media')->take(12), 'profilePhotos', 'coverPhotos']);
+            ->load(['profilePosts' => fn ($query) => $query->withCount(['likes', 'reactions', 'comments'])->with('media')->take(12), 'profilePhotos', 'coverPhotos']);
         $user->followers_count = $user->followers()->count();
         $user->following_count = $user->following()->count();
         $user->friends_count = Friendship::where('status', Friendship::FRIENDS)

@@ -1,3 +1,17 @@
+.inline-interactions { display: flex; align-items: center; gap: 14px; border-top: 1px solid var(--line); margin-top: 18px; padding-top: 12px; color: var(--muted); font-size: 12px; }
+.inline-interactions form { margin: 0; }
+.inline-action { display: inline-flex; align-items: center; gap: 4px; border: 0; background: none; color: var(--muted); cursor: pointer; font: inherit; font-size: 12px; padding: 4px 0; }
+.inline-action:hover, .inline-action:focus-visible { color: var(--accent); }
+.inline-reaction-wrap { position: relative; }
+.inline-reaction-menu { position: absolute; z-index: 20; bottom: calc(100% + 7px); left: -5px; display: flex; gap: 2px; padding: 6px 7px; background: white; border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 8px 22px #17304b1f; white-space: nowrap; }
+.inline-reaction-menu[hidden] { display: none; }
+.inline-reaction { border: 0; background: none; border-radius: 50%; cursor: pointer; font-size: 18px; line-height: 1; padding: 4px; }
+.inline-reaction:hover { background: var(--soft); transform: scale(1.12); }
+.inline-comment-form { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.inline-comment-form input { min-width: 0; padding: 9px 11px; border-radius: 18px; font-size: 12px; }
+.inline-comment-submit { width: 31px; height: 31px; flex: 0 0 auto; border: 0; border-radius: 50%; background: var(--accent); color: white; cursor: pointer; font-size: 17px; }
+.inline-comment-submit:hover { background: var(--accent-dark); }
+.inline-interactions-guest { border-top: 0; margin-top: 10px; padding-top: 0; }
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap');
 @import 'tailwindcss';
 
@@ -84,6 +98,22 @@ select { width: 100%; border: 1px solid var(--line); background: #fbfbf8; color:
 .message-reaction-toggle:hover { background: var(--soft); color: var(--accent); }
 .message-reactions { position: absolute; z-index: 20; bottom: calc(100% + 6px); left: 0; display: inline-flex; gap: 2px; padding: 5px 7px; background: white; border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 8px 22px #17304b1f; white-space: nowrap; }
 .message-reactions[hidden] { display: none; }
+.message-menu-wrap { position: relative; display: inline-flex; margin-left: 4px; }
+.message-menu-toggle { width: 24px; height: 24px; border-radius: 50%; font-size: 19px; line-height: 1; }
+.message-menu-toggle:hover { background: #ffffff25; color: white; }
+.message-menu { position: absolute; z-index: 25; top: calc(100% + 4px); right: 0; min-width: 94px; padding: 5px; background: white; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 22px #17304b1f; }
+.message-menu[hidden] { display: none; }
+.message-menu form { margin: 0; }
+.message-menu-item { display: block; width: 100%; border: 0; background: none; color: var(--ink); cursor: pointer; padding: 7px 9px; text-align: left; font: inherit; font-size: 12px; border-radius: 5px; }
+.message-menu-item:hover { background: var(--soft); }
+.message-menu-item.message-delete-item { color: #b13d32; }
+.message-edit-form { display: grid; gap: 7px; margin-top: 8px; }
+.message-edit-form[hidden] { display: none; }
+.message-edit-form textarea { min-width: 190px; padding: 8px 9px; font-size: 13px; resize: vertical; }
+.message-own .message-edit-form textarea { color: var(--ink); }
+.message-edit-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.message-edit-save { color: white; background: #1559b1; border-radius: 5px; padding: 4px 8px; }
+.message-edit-cancel { color: var(--muted); padding: 4px 8px; }
 .friend-section { max-width: 1040px; margin: 55px auto 0; }
 .friends-search { margin: 22px 0 25px; }
 .birthday-banner { max-width: 1040px; margin: 0 auto 30px; padding: 18px 20px; background: #fff3d6; border: 1px solid #e8d39c; color: #76581b; }

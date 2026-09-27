@@ -102,6 +102,46 @@ $attachmentAccept = 'image/jpeg,image/png,image/gif,image/webp,video/mp4,video/q
     });
 
     document.addEventListener('click', function (event) {
+        var menuToggle = event.target.closest('.message-menu-toggle');
+        var editToggle = event.target.closest('.message-edit-toggle');
+        var cancelToggle = event.target.closest('.message-edit-cancel');
+
+        if (menuToggle) {
+            event.stopPropagation();
+            var menu = menuToggle.nextElementSibling;
+            document.querySelectorAll('.message-menu:not([hidden])').forEach(function (openMenu) {
+                if (openMenu !== menu) {
+                    openMenu.hidden = true;
+                }
+            });
+            menu.hidden = !menu.hidden;
+            return;
+        }
+
+        if (editToggle) {
+            var bubble = editToggle.closest('.message-bubble');
+            var editForm = bubble && bubble.querySelector('.message-edit-form');
+            if (editForm) {
+                editForm.hidden = false;
+                editForm.querySelector('textarea').focus();
+            }
+            editToggle.closest('.message-menu').hidden = true;
+            return;
+        }
+
+        if (cancelToggle) {
+            cancelToggle.closest('.message-edit-form').hidden = true;
+            return;
+        }
+
+        document.querySelectorAll('.message-menu:not([hidden])').forEach(function (menu) {
+            if (!menu.parentElement.contains(event.target)) {
+                menu.hidden = true;
+            }
+        });
+    });
+
+    document.addEventListener('click', function (event) {
         document.querySelectorAll('.message-reactions:not([hidden])').forEach(function (reactions) {
             if (!reactions.parentElement.contains(event.target)) {
                 reactions.hidden = true;

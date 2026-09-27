@@ -56,7 +56,11 @@ class PostController extends Controller
             $viewerId = Auth::id();
             $friendIds = Friendship::where('status', Friendship::FRIENDS)->where(fn ($query) => $query->where('user_one_id', $viewerId)->orWhere('user_two_id', $viewerId))->get()->map(fn (Friendship $friendship) => $friendship->user_one_id === $viewerId ? $friendship->user_two_id : $friendship->user_one_id);
             $stories = Story::with('user')->whereIn('user_id', $priorityUserIds)->where('user_id', '!=', $viewerId)->where('expires_at', '>', now())->whereNotExists(fn ($query) => $query->selectRaw('1')->from('story_mutes')->whereColumn('story_mutes.story_owner_id', 'stories.user_id')->where('story_mutes.user_id', $viewerId))->where(function ($query) use ($viewerId, $friendIds): void {
-                $query->where('privacy', 'PUBLIC')->orWhere('user_id', $viewerId)->orWhere(fn ($friends) => $friends->where('privacy', 'FRIENDS')->whereIn('user_id', $friendIds));
+                $query->where('privacy', 'PUBLIC')
+                    ->orWhere(fn ($custom) => $custom->where('privacy', 'CUSTOM')->whereJsonContains('custom_user_ids', $viewerId))
+                    ->orWhere(fn ($hidden) => $hidden->where('privacy', 'HIDE_FROM_USERS')->whereJsonDoesntContain('hidden_user_ids', $viewerId))
+                    ->orWhere('user_id', $viewerId)
+                    ->orWhere(fn ($friends) => $friends->where('privacy', 'FRIENDS')->whereIn('user_id', $friendIds));
             })->latest()->get()->unique('user_id')->values();
         }
 
